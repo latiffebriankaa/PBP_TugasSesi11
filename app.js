@@ -1,11 +1,15 @@
 const express = require("express");
 const db = require("./db");
 const app = express();
-const logging = require('./middleware/logging');
+const logging = require("./middleware/logging");
 const validasiProduk = require("./middleware/validasiProduk");
-const auth = require('./middleware/auth');
- 
-app.use(logging)
+const auth = require("./middleware/auth");
+const EksekusiWaktu = require("./middleware/EksekusiWaktu");
+const JamOperasional = require("./middleware/JamOperasional");
+
+app.use(EksekusiWaktu);
+app.use(JamOperasional);
+app.use(logging);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -67,7 +71,7 @@ app.get("/produk/:id", (req, res) => {
   );
 });
 
-app.post("/produk", validasiProduk , (req, res) => {
+app.post("/produk", validasiProduk, (req, res) => {
   const { nama_produk, jml_stock, harga } = req.body;
 
   if (!nama_produk || jml_stock == null || harga == null) {
@@ -134,7 +138,7 @@ app.put("/produk/:id", (req, res) => {
   );
 });
 
-app.delete("/produk/:id", auth , (req, res) => {
+app.delete("/produk/:id", auth, (req, res) => {
   const id_produk = req.params.id;
 
   db.query(
